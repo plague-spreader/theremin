@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
+# import subprocess
+# import time
 import argparse
-import subprocess
-import time
-import cv2
-import numpy as np
 import pygame
+import numpy as np
 
 def system(s):
 	"""
@@ -30,7 +29,8 @@ def get_note_from_exponent(i, display_cents=True):
 	NOTE: i can be a fractional number.
 	"""
 	
-	int_i = int(i)
+	# int_i = int(i)
+	int_i = np.floor(i).astype(int)
 	note = notes[int_i % 12]
 	octave = int(int_i / 12) + 4
 	cents = int((i - int_i)*100)
@@ -41,10 +41,13 @@ def get_note_from_exponent(i, display_cents=True):
 def main(args):
 	(max_x, max_y) = args.size
 	pygame.init()
+	pygame.mixer.init()
 	pygame.font.init()
 	current_note_font = pygame.font.SysFont("monospace", 30)
 	indicator_note_font = pygame.font.SysFont("monospace", int(max_x/48-15))
 	screen = pygame.display.set_mode((max_x, max_y))
+	# the note duration will be 0.1 seconds sampled at 44100 Hz
+	dt = np.arange(0, 0.1, 1/44100).astype(np.float32)
 	try:
 		while True:
 			for event in pygame.event.get():
@@ -64,8 +67,14 @@ get_note_from_exponent(i - 24, False), False, (255, 0, 0)), (x, max_y - 50))
 			screen.blit(text, (50, 50))
 			pygame.display.flip()
 			
-			system_bg("play -qn synth .1 sine {} vol {}".format(freq, t_y))
-			time.sleep(0.05)
+			# system_bg("play -qn synth .1 sine {} vol {}".format(freq, t_y))
+			
+			# time.sleep(0.05)
+			note_signal = np.sin(2*np.pi*freq*dt)
+			sound = pygame.mixer.Sound(note_signal)
+			sound.set_volume(t_y)
+			sound.play()
+			pygame.time.wait(50)
 	except KeyboardInterrupt:
 		pass
 
