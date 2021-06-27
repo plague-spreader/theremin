@@ -1,23 +1,8 @@
 #!/usr/bin/env python
 
-# import subprocess
-# import time
 import argparse
 import pygame
 import numpy as np
-
-def system(s):
-	"""
-	Utility function for executing system commands
-	"""
-	return tuple(map(lambda t: t.decode(), subprocess.Popen(s.split(), \
-stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()))
-
-def system_bg(s):
-	"""
-	Utility function for executing system commands in background
-	"""
-	subprocess.Popen(s.split())
 
 notes = "A A# B C C# D D# E F F# G G#".split()
 def get_note_from_exponent(i, display_cents=True):
@@ -29,7 +14,6 @@ def get_note_from_exponent(i, display_cents=True):
 	NOTE: i can be a fractional number.
 	"""
 	
-	# int_i = int(i)
 	int_i = np.floor(i).astype(int)
 	note = notes[int_i % 12]
 	octave = int(int_i / 12) + 4
@@ -67,9 +51,6 @@ get_note_from_exponent(i - 24, False), False, (255, 0, 0)), (x, max_y - 50))
 			screen.blit(text, (50, 50))
 			pygame.display.flip()
 			
-			# system_bg("play -qn synth .1 sine {} vol {}".format(freq, t_y))
-			
-			# time.sleep(0.05)
 			note_signal = np.sin(2*np.pi*freq*dt)
 			sound = pygame.mixer.Sound(note_signal)
 			sound.set_volume(t_y)
