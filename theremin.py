@@ -25,7 +25,7 @@ def get_note_from_exponent(i, display_cents=True):
 def main(args):
 	(max_x, max_y) = args.size
 	pygame.init()
-	pygame.mixer.init()
+	pygame.mixer.init(channels=1)
 	pygame.font.init()
 	current_note_font = pygame.font.SysFont("monospace", 30)
 	indicator_note_font = pygame.font.SysFont("monospace", int(max_x/48-15))
@@ -51,8 +51,9 @@ get_note_from_exponent(i - 24, False), False, (255, 0, 0)), (x, max_y - 50))
 			screen.blit(text, (50, 50))
 			pygame.display.flip()
 			
-			note_signal = np.sin(2*np.pi*freq*dt)
-			sound = pygame.mixer.Sound(note_signal)
+			note_signal = np.sin(2*np.pi*freq*dt)*(1<<15)
+			note_signal = note_signal.astype("<h").tobytes()
+			sound = pygame.mixer.Sound(buffer=note_signal)
 			sound.set_volume(t_y)
 			sound.play()
 			pygame.time.wait(50)
