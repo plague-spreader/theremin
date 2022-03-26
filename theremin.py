@@ -14,9 +14,9 @@ def get_note_from_exponent(i, display_cents=True):
 	NOTE: i can be a fractional number.
 	"""
 	
-	int_i = np.floor(i).astype(int)
+	int_i = np.trunc(i).astype(int)
 	note = notes[int_i % 12]
-	octave = int(int_i / 12) + 4
+	octave = int(np.floor((i + 9) / 12)) + 4
 	cents = int((i - int_i)*100)
 	if not display_cents:
 		return "{}{}".format(note, octave)
